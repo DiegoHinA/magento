@@ -19,17 +19,16 @@ services:
       - "80:8000"
       - "443:8443"
     volumes: &appvolumes
-      - ~/.composer:/var/www/.composer:cached
-      - ~/.ssh/id_rsa:/var/www/.ssh/id_rsa:cached
-      - ~/.ssh/known_hosts:/var/www/.ssh/known_hosts:cached
-      - appdata:/var/www/html
-      - sockdata:/sock
-      - ssldata:/etc/nginx/certs
+      - /opt/pdata/composer:/var/www/.composer:cached
+      - /opt/pdata/ssh/id_rsa:/var/www/.ssh/id_rsa:cached
+      - /opt/pdata/ssh/known_hosts:/var/www/.ssh/known_hosts:cached
+      - /opt/pdata/appdata:/var/www/html
+      - /opt/pdata/sockdata:/sock
+      - /opt/pdata/ssldata:/etc/nginx/certs
     extra_hosts: &appextrahosts
       ## M1 Mac support to fix Docker delay, see #566
       - "app:172.17.0.1"
       - "phpfpm:172.17.0.1"
-      - "db:172.17.0.1"
       - "redis:172.17.0.1"
       - "elasticsearch:172.17.0.1"
       - "rabbitmq:172.17.0.1"
@@ -41,16 +40,6 @@ services:
     volumes: *appvolumes
     extra_hosts: *appextrahosts
     env_file: env/phpfpm.env
-
-  db:
-    image: mariadb:10.4
-    command: --max_allowed_packet=64M
-    ports:
-      - "3306:3306"
-    env_file: env/db.env
-    volumes:
-      - dbdata:/var/lib/mysql
-    extra_hosts: *appextrahosts
 
   redis:
     image: redis:6.0-alpine
